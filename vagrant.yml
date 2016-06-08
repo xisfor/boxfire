@@ -1,0 +1,36 @@
+---
+- hosts: all
+  vars:
+    app_root: '/vagrant'
+    app_user: vagrant
+    app_public: "{{app_root}}/public"
+    roles_path: '../ansible-provisioner/roles'
+    ruby_versions:
+      - 'ruby2.3'
+      - 'ruby2.3-dev'
+
+  roles:
+    - "{{roles_path}}/init"
+    - "{{roles_path}}/ruby"
+    - "{{roles_path}}/nodejs"
+    - "{{roles_path}}/postgres"
+    - "{{roles_path}}/sqlite3"
+    - "{{roles_path}}/unicorn"
+    - "{{roles_path}}/nginx"
+
+  tasks:
+
+    - name: Run bundler
+      command: bash -lc "cd {{ app_root }} && bundle install"
+
+    - file: path={{ app_root }}/log state=directory
+    - file: path={{ app_root }}/tmp/pids state=directory recurse=yes
+
+    - template: src=nginx.tpl.j2 dest=/etc/nginx/sites-enabled/default
+      sudo: true
+
+    - service: name=nginx state=restarted
+      sudo: true
+
+    - service: name=unicorn state=reloaded
+      sudo: true
