@@ -23,7 +23,7 @@ gem 'turbolinks'
 gem 'active_model_serializers', '~> 0.10.0'
 
 # User authentication
-gem 'devise', '~> 4.1.1'
+gem 'devise', '~> 4.7.1'
 
 # Use Unicorn as the app server
 gem 'unicorn'
